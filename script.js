@@ -7,9 +7,14 @@ const DADOS_EMPRESAS = {
     nadia: {
         nome_completo: "NADIA RURAL LTDA",
         nome_curto: "NadiaRural",
-        logo_esq: "assets/nadia/logo-esq.png", // Ajuste os nomes dos arquivos
-        logo_dir: "assets/nadia/logo-dir.png", // Ajuste os nomes dos arquivos
-        diretor: "ELIAS YUSUF NETO",
+        logo_esq: "assets/nadia/logo-esq.png", // Nome do arquivo Nadia Rural
+        logo_dir: "assets/nadia/logo-dir.png", // Nome do arquivo Pilar Soluções
+        
+        // NOVOS DADOS DE ASSINATURA (CORRIGIDOS)
+        assinatura_img: "assets/nadia/assinatura-n.png", // NOME DO ARQUIVO DA ASSINATURA 'gq'
+        assinatura_nome: "GENÉSIO QUEIROGA",
+        assinatura_oab: "OAB/PA 19.107-B",
+        
         texto_base: `
             <p>
                 <strong>NADIA RURAL LTDA</strong>, pessoa jurídica de Direito Privado, inscrita no CNPJ sob nº 01.542.004/0001-64, sediada Avenida Getúlio Vargas, 1892 - Entroncamento, Imperatriz - MA, 65.913-473, por seu Diretor Administrativo <strong>ELIAS YUSUF NETO</strong>, brasileiro, empresário, casado, portador do CPF.: 614.758.073-68, com endereço profissional mencionado acima, vem por meio desta, <strong>NOTIFICAR</strong>:
@@ -45,7 +50,9 @@ const DADOS_EMPRESAS = {
         nome_curto: "Inter",
         logo_esq: "assets/inter/logo-esq.png",
         logo_dir: "assets/inter/logo-dir.png",
-        diretor: "DIRETOR INTERN ENGENHARIA",
+        assinatura_img: "", // Vazio por padrão ou insira o caminho da assinatura de inter
+        assinatura_nome: "DIRETOR INTERN ENGENHARIA", // Manter o diretor ou mudar para o advogado
+        assinatura_oab: "",
         texto_base: `
             <p>
                 <strong>INTER SERVIÇOS FINANCEIROS LTDA</strong>, pessoa jurídica de Direito Privado, inscrita no CNPJ sob nº XX.XXX.XXX/XXXX-XX, com sede em São Paulo/SP, por meio de sua Assessoria Jurídica, vem por meio desta, <strong>NOTIFICAR</strong>:
@@ -73,7 +80,9 @@ const DADOS_EMPRESAS = {
         nome_curto: "Agrominas",
         logo_esq: "assets/agrominas/logo-esq.png",
         logo_dir: "assets/agrominas/logo-dir.png",
-        diretor: "DIRETOR GERAL AGROMINAS",
+        assinatura_img: "", // Vazio por padrão ou insira o caminho da assinatura de agrominas
+        assinatura_nome: "DIRETOR GERAL AGROMINAS",
+        assinatura_oab: "",
         texto_base: `
             <p>
                 <strong>AGROMINAS S/A</strong>, empresa do setor agropecuário, inscrita no CNPJ sob nº YY.YYY.YYY/YYYY-YY, com sede em Minas Gerais/MG, por sua representante legal, vem por meio desta, <strong>NOTIFICAR</strong>:
@@ -124,6 +133,7 @@ function selecionarEmpresa(empresa) {
     carregarTemplate(dados);
 }
 
+// FUNÇÃO ATUALIZADA PARA CARREGAR IMAGEM E DADOS DA ASSINATURA
 function carregarTemplate(dados) {
     // 1. Logos
     document.getElementById('logo-print-esq').src = dados.logo_esq;
@@ -132,14 +142,24 @@ function carregarTemplate(dados) {
     // 2. Texto base
     document.getElementById('template-texto').innerHTML = dados.texto_base;
     
-    // 3. Assinatura
-    document.getElementById('assinatura-nome-empresa').innerText = dados.nome_completo;
-    document.getElementById('assinatura-nome-diretor').innerText = dados.diretor;
+    // 3. Assinatura do Advogado/Diretor
+    document.getElementById('assinatura-nome-advogado').innerText = dados.assinatura_nome;
+    document.getElementById('assinatura-oab').innerText = dados.assinatura_oab;
+
+    // Imagem da assinatura
+    const imgAssinatura = document.getElementById('assinatura-img');
+    if (dados.assinatura_img) {
+        imgAssinatura.src = dados.assinatura_img;
+        imgAssinatura.style.display = 'block';
+    } else {
+        imgAssinatura.src = '';
+        imgAssinatura.style.display = 'none';
+    }
 }
 
 
 // ===========================================
-// 3. FUNÇÕES DE GERAÇÃO (Ajustadas)
+// 3. FUNÇÕES DE GERAÇÃO
 // ===========================================
 
 function configurarData() {
@@ -185,6 +205,7 @@ async function iniciarGeracao() {
         };
 
         const elemento = document.getElementById('documento-modelo');
+        // Pega o HTML do template ANTES de preencher
         const templateTextoOriginal = document.getElementById('template-texto').innerHTML;
 
         for (let i = 0; i < linhas.length; i++) {
@@ -250,7 +271,7 @@ async function iniciarGeracao() {
 
     } catch (erro) {
         console.error(erro);
-        alert(`Ocorreu um erro. Verifique o console do navegador. Erro: ${erro.message}`);
+        alert(`Ocorreu um erro: ${erro.message}`);
         status.innerText = "Erro no processo.";
         btn.disabled = false;
         btn.innerText = "Tentar Novamente";
