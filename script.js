@@ -62,7 +62,7 @@ const DADOS_EMPRESAS = {
 
         texto_base: `
             <p>
-                <strong>INTER SERVIÇOS FINANCEIROS LTDA</strong>, pessoa jurídica de Direito Privado, inscrita no CNPJ sob nº XX.XXX.XXX/XXXX-XX, com sede em São Paulo/SP, por meio de sua Assessoria Jurídica, vem por meio desta, <strong>NOTIFICAR</strong>:
+                <strong>INTER SERVIÇOS FINANCEIROS LTDA</strong>, pessoa jurídica de Direito Privado, inscrita no CNPJ sob nº XXdsdsdsdsd.XXX.XXX/XXXX-XX, com sede em São Paulo/SP, por meio de sua Assessoria Jurídica, vem por meio desta, <strong>NOTIFICAR</strong>:
             </p>
 
             <p>
