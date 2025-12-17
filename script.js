@@ -208,7 +208,7 @@ async function iniciarGeracao() {
         let count = 0;
 
         const opt = {
-            margin: 10,
+            margin: 15,
             filename: 'arquivo.pdf',
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
