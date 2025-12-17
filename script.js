@@ -1,19 +1,25 @@
 // ===========================================
 // 1. DADOS DE CADA EMPRESA
+// Assinatura UNIFORMIZADA para todas as empresas (Genésio Queiroga)
 // ===========================================
 
-// Defina aqui os templates de texto, logos e dados de assinatura para cada empresa
+// Dados da Assinatura (Advogado Genésio Queiroga)
+const DADOS_ASSINATURA_UNIFICADA = {
+    assinatura_img: "assets/nadia/assinatura-n.png", // Usando a imagem da Nadia
+    assinatura_nome: "GENÉSIO QUEIROGA",
+    assinatura_oab: "OAB/PA 19.107-B",
+}
+
+
 const DADOS_EMPRESAS = {
     nadia: {
         nome_completo: "NADIA RURAL LTDA",
         nome_curto: "NadiaRural",
-        logo_esq: "assets/nadia/logo-esq.png", // Nome do arquivo Nadia Rural
-        logo_dir: "assets/nadia/logo-dir.png", // Nome do arquivo Pilar Soluções
+        logo_esq: "assets/nadia/logo-esq.png", 
+        logo_dir: "assets/nadia/logo-dir.png", 
         
-        // NOVOS DADOS DE ASSINATURA (CORRIGIDOS)
-        assinatura_img: "assets/nadia/assinatura-n.png", // NOME DO ARQUIVO DA ASSINATURA 'gq'
-        assinatura_nome: "GENÉSIO QUEIROGA",
-        assinatura_oab: "OAB/PA 19.107-B",
+        // Assinatura Nadia Rural (Dados originais)
+        ...DADOS_ASSINATURA_UNIFICADA,
         
         texto_base: `
             <p>
@@ -50,9 +56,10 @@ const DADOS_EMPRESAS = {
         nome_curto: "Inter",
         logo_esq: "assets/inter/logo-esq.png",
         logo_dir: "assets/inter/logo-dir.png",
-        assinatura_img: "", // Vazio por padrão ou insira o caminho da assinatura de inter
-        assinatura_nome: "DIRETOR INTERN ENGENHARIA", // Manter o diretor ou mudar para o advogado
-        assinatura_oab: "",
+        
+        // Assinatura INTER (UNIFORMIZADA)
+        ...DADOS_ASSINATURA_UNIFICADA,
+
         texto_base: `
             <p>
                 <strong>INTER SERVIÇOS FINANCEIROS LTDA</strong>, pessoa jurídica de Direito Privado, inscrita no CNPJ sob nº XX.XXX.XXX/XXXX-XX, com sede em São Paulo/SP, por meio de sua Assessoria Jurídica, vem por meio desta, <strong>NOTIFICAR</strong>:
@@ -80,9 +87,10 @@ const DADOS_EMPRESAS = {
         nome_curto: "Agrominas",
         logo_esq: "assets/agrominas/logo-esq.png",
         logo_dir: "assets/agrominas/logo-dir.png",
-        assinatura_img: "", // Vazio por padrão ou insira o caminho da assinatura de agrominas
-        assinatura_nome: "DIRETOR GERAL AGROMINAS",
-        assinatura_oab: "",
+        
+        // Assinatura AGROMINAS (UNIFORMIZADA)
+        ...DADOS_ASSINATURA_UNIFICADA,
+
         texto_base: `
             <p>
                 <strong>AGROMINAS S/A</strong>, empresa do setor agropecuário, inscrita no CNPJ sob nº YY.YYY.YYY/YYYY-YY, com sede em Minas Gerais/MG, por sua representante legal, vem por meio desta, <strong>NOTIFICAR</strong>:
@@ -108,6 +116,9 @@ const DADOS_EMPRESAS = {
 };
 
 let EMPRESA_SELECIONADA = null;
+
+// O restante do script.js permanece inalterado a partir daqui
+// (As funções selecionarEmpresa, carregarTemplate, iniciarGeracao etc., estão corretas)
 
 // ===========================================
 // 2. FUNÇÕES DE INTERFACE E SELEÇÃO
