@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Notificações - Nadia Rural</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <style>
+        body { background-color: #f4f4f9; padding-bottom: 100px; }
+        .container { max-width: 900px; margin-top: 30px; }
+        
+        /* ÁREA DE CONFIGURAÇÃO DAS IMAGENS */
+        .img-upload-box {
+            border: 2px dashed #ccc;
+            padding: 15px;
+            text-align: center;
+            border-radius: 8px;
+            background: #fff;
+            margin-bottom: 15px;
+        }
+        .img-preview {
+            max-height: 80px;
+            display: block;
+            margin: 10px auto;
+        }
+
+        /* O TEMPLATE DO DOCUMENTO */
+        /* Importante: Não usamos display:none, pois o html2pdf precisa "ver" o elemento. */
+        /* Usamos position fixed com z-index negativo para ficar "atrás" de tudo */
+        #template-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1000; /* Fica atrás do site */
+            opacity: 0; /* Invisível ao olho, mas visível pro código */
+            pointer-events: none;
+        }
+
+        .documento-a4 {
+            width: 210mm; /* Largura A4 */
+            padding: 20mm;
+            background: white;
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+        }
+
+        .header-logos {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            height: 100px; /* Altura fixa para o cabeçalho */
+        }
+        
+        .logo-esquerda, .logo-direita {
+            max-height: 90px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+
+        .assinatura { margin-top: 50px; text-align: center; }
+        p { margin-bottom: 15px; text-align: justify; }
+    </style>
+</head>
+<body>
+
+<div class="container bg-white p-5 rounded shadow" style="position: relative; z-index: 10;">
+    <h2 class="mb-4 text-center">Gerador de Notificações</h2>
+    
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="img-upload-box">
+                <label class="form-label fw-bold">Logo Esquerda (Nadia Rural)</label>
+                <input type="file" class="form-control form-control-sm" accept="image/*" onchange="carregarImagem(this, 'img-preview-esq', 'logo-print-esq')">
+                <img id="img-preview-esq" class="img-preview" src="" style="display:none;">
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="img-upload-box">
+                <label class="form-label fw-bold">Logo Direita (Pilar)</label>
+                <input type="file" class="form-control form-control-sm" accept="image/*" onchange="carregarImagem(this, 'img-preview-dir', 'logo-print-dir')">
+                <img id="img-preview-dir" class="img-preview" src="" style="display:none;">
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <strong>Ordem das colunas (Excel/Sheets):</strong><br>
+        NOME | CPF/CNPJ | VALOR
+    </div>
+
+    <div class="mb-3">
+        <label for="inputData" class="form-label">Cole os dados da tabela aqui:</label>
+        <textarea class="form-control" id="inputData" rows="8" placeholder="KESLEY LIMA	123.456.789-00	R$ 290.000,00"></textarea>
+    </div>
+
+    <div class="d-grid gap-2">
+        <button class="btn btn-primary btn-lg" onclick="iniciarGeracao()" id="btnGerar">
+            Gerar PDFs e Baixar ZIP
+        </button>
+    </div>
+    
+    <div id="status" class="mt-3 text-center text-muted fw-bold"></div>
+</div>
+
+<div id="template-wrapper">
+    <div id="documento-modelo" class="documento-a4">
+        
+        <div class="header-logos">
+            <img src="" id="logo-print-esq" class="logo-esquerda" alt="Logo Esq">
+            <img src="" id="logo-print-dir" class="logo-direita" alt="Logo Dir">
+        </div>
+
+        <p>
+            <strong>NADIA RURAL LTDA</strong>, pessoa jurídica de Direito Privado, inscrita no CNPJ sob nº 01.542.004/0001-64, sediada Avenida Getúlio Vargas, 1892 - Entroncamento, Imperatriz - MA, 65.913-473, por seu Diretor Administrativo <strong>ELIAS YUSUF NETO</strong>, brasileiro, empresário, casado, portador do CPF.: 614.758.073-68, com endereço profissional mencionado acima, vem por meio desta, <strong>NOTIFICAR</strong>:
+        </p>
+
+        <p>
+            <strong id="print-nome">{{Nome}}</strong>, inscrito (a) no CPF/CNPJ sob o nº <strong id="print-cnpj">{{CNPJ}}</strong> para pagamento de débito em aberto, totalizando o importe de <strong id="print-valor">{{Valor}}</strong>.
+        </p>
+
+        <p>
+            Se porventura os pagamentos supramencionados tenham sido realizados, por gentileza envie os comprovantes para o whatsapp <strong>(94) 9 8137-0253 - Ávila Silva</strong>, e desconsidere esta notificação.
+        </p>
+
+        <p>
+            Caso os valores acima estejam realmente em aberto e considerando que já fora dada a oportunidade para pagamento espontâneo, a <strong>NOTIFICANTE</strong> com o intuito de solucionar este imbróglio de forma amigável oferece oportunidade de acordar a referida dívida, objetivando a quitação do referido débito.
+        </p>
+
+        <p>
+            Havendo interesse em negociar junto a empresa, se manifeste em um prazo de <strong>03 (três) dias úteis</strong> a partir do recebimento desta, para formalização do acordo.
+        </p>
+
+        <p>
+            Não ocorrendo manifestação ou esta seja contrária a avença, ou ainda haja recusa no recebimento desta, tomaremos de imediato as medidas judiciais cabíveis.
+        </p>
+
+        <p>
+            Cientes de vossa compreensão, estamos à disposição.
+        </p>
+
+        <p style="text-align: right; margin-top: 40px;" id="print-data">
+            Marabá, DATA DE HOJE
+        </p>
+
+        <div class="assinatura">
+            ______________________________________________<br>
+            <strong>NADIA RURAL LTDA</strong><br>
+            ELIAS YUSUF NETO
+        </div>
+    </div>
+</div>
+
+<script>
+    // 1. Função para carregar imagens do computador e colocar no template
+    function carregarImagem(input, previewId, printId) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                // Mostra preview
+                var preview = document.getElementById(previewId);
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                // Coloca no template oculto
+                document.getElementById(printId).src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // 2. Configura a data de hoje no formato brasileiro
+    function configurarData() {
+        const hoje = new Date();
+        const opcoes = { year: 'numeric', month: 'long', day: 'numeric' };
+        // Ex: 16 de dezembro de 2025
+        const dataFormatada = hoje.toLocaleDateString('pt-BR', opcoes);
+        document.getElementById('print-data').innerText = `Marabá, ${dataFormatada}`;
+    }
+
+    // 3. Função principal de geração
+    async function iniciarGeracao() {
+        const btn = document.getElementById('btnGerar');
+        const status = document.getElementById('status');
+        const inputData = document.getElementById('inputData').value.trim();
+
+        // Validação simples
+        if (!inputData) {
+            alert("Cole os dados da planilha antes de gerar.");
+            return;
+        }
+
+        // Atualiza a data antes de começar
+        configurarData();
+
+        // Trava o botão
+        btn.disabled = true;
+        btn.innerText = "Processando... aguarde";
+        
+        try {
+            const linhas = inputData.split('\n');
+            const zip = new JSZip();
+            const pasta = zip.folder("Notificacoes_PDF");
+            let count = 0;
+
+            // Opções do PDF
+            const opt = {
+                margin: 10,
+                filename: 'arquivo.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true }, // useCORS ajuda com imagens
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            const elemento = document.getElementById('documento-modelo');
+
+            // Loop linha a linha
+            for (let i = 0; i < linhas.length; i++) {
+                const linha = linhas[i].trim();
+                if (!linha) continue; // Pula linha vazia
+
+                const colunas = linha.split('\t'); // Separa por TAB
+                
+                // Ignora cabeçalho se tiver escrito "NOME" na primeira coluna
+                if (i === 0 && colunas[0].toUpperCase() === "NOME") continue;
+
+                if (colunas.length < 3) {
+                    console.warn(`Linha ${i+1} ignorada: dados incompletos.`);
+                    continue;
+                }
+
+                // Preenche os dados
+                const nome = colunas[0].trim();
+                const cnpj = colunas[1].trim();
+                const valor = colunas[2].trim();
+
+                document.getElementById('print-nome').innerText = nome;
+                document.getElementById('print-cnpj').innerText = cnpj;
+                document.getElementById('print-valor').innerText = valor;
+
+                status.innerText = `Gerando PDF para: ${nome}...`;
+
+                // Gera o PDF (espera terminar antes de ir pro próximo)
+                // Usamos .output('blob') para pegar o arquivo binário
+                const pdfBlob = await html2pdf().set(opt).from(elemento).output('blob');
+                
+                // Salva no ZIP
+                const nomeArquivo = `Notificacao_${nome.replace(/[^a-z0-9]/gi, '_')}.pdf`;
+                pasta.file(nomeArquivo, pdfBlob);
+                
+                count++;
+            }
+
+            if (count === 0) {
+                alert("Nenhuma linha válida encontrada. Verifique se copiou direto do Excel/Sheets.");
+                btn.disabled = false;
+                btn.innerText = "Gerar PDFs e Baixar ZIP";
+                status.innerText = "";
+                return;
+            }
+
+            status.innerText = "Finalizando e compactando ZIP...";
+
+            // Gera o ZIP final
+            const content = await zip.generateAsync({type:"blob"});
+            saveAs(content, "Notificacoes_NadiaRural.zip");
+
+            status.innerText = "Sucesso! Download iniciado.";
+            btn.innerText = "Gerar Novamente";
+            btn.disabled = false;
+
+        } catch (erro) {
+            console.error(erro);
+            alert("Ocorreu um erro: " + erro.message);
+            status.innerText = "Erro no processo.";
+            btn.disabled = false;
+            btn.innerText = "Tentar Novamente";
+        }
+    }
+
+    // Inicializa a data ao carregar a página
+    window.onload = configurarData;
+</script>
+
+</body>
+</html>
