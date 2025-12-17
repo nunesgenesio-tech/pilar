@@ -47,9 +47,8 @@
     /* CORPO A4 */
     .documento-a4 {
         width: 210mm;
-        /* CORREÇÃO: Padding removido para evitar margem dupla */
         padding: 0; 
-        margin: 0; /* GARANTINDO QUE NÃO HÁ MARGEM EXTERNA */
+        margin: 0; 
         background: white;
         font-family: 'Times New Roman', serif;
         font-size: 12pt;
@@ -57,11 +56,11 @@
         color: #000;
     }
     
-    /* NOVO AJUSTE: Limitando a largura do conteúdo interno */
+    /* AJUSTE MAIS AGRESSIVO: Limitando a largura do conteúdo interno */
     #documento-modelo {
-        /* A4 interno, descontando 10mm de cada lado = 190mm de largura útil */
-        max-width: 190mm; 
-        margin: 0 auto; /* Centraliza o conteúdo dentro da página (embora o html2pdf já faça isso) */
+        /* A4 - (15mm esquerda + 15mm direita) = 180mm de largura útil */
+        max-width: 180mm; 
+        margin: 0 auto; /* Centraliza o conteúdo */
     }
 
     .header-logos {
