@@ -9,89 +9,88 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-    <style>
-        body { background-color: #f4f4f9; padding-bottom: 100px; }
-        .container { max-width: 900px; margin-top: 30px; }
-        
-        /* NOVO ESTILO: CABEÇALHO VISUAL VERDE */
-        .header-visuals {
-            background-color: #5cb85c; /* Um tom de verde agradável */
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-        .header-visuals img {
-            max-height: 70px; 
-            object-fit: contain;
-            background: white; /* Fundo branco para destacar a logo */
-            padding: 5px;
-            border-radius: 5px;
-        }
-        .header-visuals h2 {
-            margin: 0;
-            font-size: 1.8rem;
-            font-weight: bold;
-        }
-        .header-visuals p {
-            margin: 0;
-            font-size: 0.9rem;
-            text-align: left;
-        }
-        /* FIM DO NOVO ESTILO */
+<style>
+    body { background-color: #f4f4f9; padding-bottom: 100px; }
+    .container { max-width: 900px; margin-top: 30px; }
+    
+    /* ESTILOS DA PÁGINA DE CONTROLE (Onde ficam os botões) - OK */
+    .header-visuals {
+        background-color: #5cb85c; 
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+    .header-visuals img {
+        max-height: 70px; 
+        object-fit: contain;
+        background: white; 
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .header-visuals h2 { margin: 0; font-size: 1.8rem; font-weight: bold; }
+    .header-visuals p { margin: 0; font-size: 0.9rem; text-align: left; }
 
-        /* O TEMPLATE DO DOCUMENTO */
-        #template-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1000;
-            opacity: 0;
-            pointer-events: none;
-        }
+    /* O TEMPLATE OCULTO */
+    #template-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1000;
+        opacity: 0;
+        pointer-events: none;
+    }
 
-        .documento-a4 {
-            width: 210mm;
-            /* CORREÇÃO: Removendo padding para evitar margem dupla no PDF */
-            padding: 0mm; 
-            background: white;
-            font-family: 'Times New Roman', serif;
-            font-size: 12pt;
-            line-height: 1.5;
-            color: #000;
-        }
+    /* CORPO A4 */
+    .documento-a4 {
+        width: 210mm;
+        /* CORREÇÃO: Padding removido para evitar margem dupla */
+        padding: 0; 
+        margin: 0; /* GARANTINDO QUE NÃO HÁ MARGEM EXTERNA */
+        background: white;
+        font-family: 'Times New Roman', serif;
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+    }
+    
+    /* NOVO AJUSTE: Limitando a largura do conteúdo interno */
+    #documento-modelo {
+        /* A4 interno, descontando 10mm de cada lado = 190mm de largura útil */
+        max-width: 190mm; 
+        margin: 0 auto; /* Centraliza o conteúdo dentro da página (embora o html2pdf já faça isso) */
+    }
 
-        .header-logos {
-            display: flex;
-            justify-content: space-around; 
-            align-items: center;
-            margin-bottom: 50px; 
-            height: 100px;
-        }
-        
-        .logo-img {
-            max-height: 90px;
-            max-width: 200px;
-            object-fit: contain;
-        }
+    .header-logos {
+        display: flex;
+        justify-content: space-around; 
+        align-items: center;
+        margin-bottom: 50px; 
+        height: 100px;
+    }
+    
+    .logo-img {
+        max-height: 90px;
+        max-width: 200px;
+        object-fit: contain;
+    }
 
-        .assinatura { margin-top: 50px; text-align: right; }
-        p { margin-bottom: 15px; text-align: justify; }
+    /* Garantindo que o texto não ultrapasse */
+    p { margin-bottom: 15px; text-align: justify; word-wrap: break-word; }
 
-        .btn-empresa {
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        .btn-empresa.active {
-            border-color: #007bff;
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-            background-color: #e9f5ff;
-        }
-        .logo-preview { height: 30px; margin-right: 10px; }
-    </style>
+    .assinatura { margin-top: 50px; text-align: right; }
+    
+    .btn-empresa { border: 2px solid transparent; transition: all 0.3s; }
+    .btn-empresa.active {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        background-color: #e9f5ff;
+    }
+    .logo-preview { height: 30px; margin-right: 10px; }
+</style>
 </head>
 <body>
 
