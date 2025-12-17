@@ -47,7 +47,8 @@
             object-fit: contain;
         }
 
-        .assinatura { margin-top: 50px; text-align: center; }
+        /* Ajuste do estilo da assinatura para o novo layout */
+        .assinatura { margin-top: 50px; text-align: right; }
         p { margin-bottom: 15px; text-align: justify; }
 
         .btn-empresa {
@@ -71,7 +72,7 @@
     <div class="row mb-4 justify-content-center" id="selecao-empresa">
         <div class="col-md-4 mb-2">
             <button class="btn btn-outline-secondary w-100 btn-lg btn-empresa" data-empresa="nadia" onclick="selecionarEmpresa('nadia')">
-                <img src="assets/nadia/logo-esq.png" class="logo-preview"> Nadia Rural
+                <img src="assets/nadia/logo-esq.png" class="logo-preview" onerror="this.style.display='none'"> Nadia Rural
             </button>
         </div>
         <div class="col-md-4 mb-2">
@@ -128,10 +129,11 @@
             Marabá, DATA DE HOJE
         </p>
 
-        <div class="assinatura">
-            ______________________________________________<br>
-            <strong id="assinatura-nome-empresa">NOME DA EMPRESA</strong><br>
-            <span id="assinatura-nome-diretor">NOME DO DIRETOR</span>
+        <div class="assinatura" style="text-align: right; margin-top: 50px;">
+            <img src="" id="assinatura-img" style="height: 60px; margin-bottom: 5px; display: block; margin-left: auto;" alt="Assinatura">
+            
+            <strong id="assinatura-nome-advogado">NOME DO ADVOGADO</strong><br>
+            <span id="assinatura-oab">OAB/PA XXXX</span>
         </div>
     </div>
 </div>
