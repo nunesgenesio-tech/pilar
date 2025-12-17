@@ -9,59 +9,61 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-    <style>
-        body { background-color: #f4f4f9; padding-bottom: 100px; }
-        .container { max-width: 900px; margin-top: 30px; }
-        
-        /* O TEMPLATE DO DOCUMENTO */
-        #template-wrapper {
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1000;
-            opacity: 0;
-            pointer-events: none;
-        }
+  <style>
+    body { background-color: #f4f4f9; padding-bottom: 100px; }
+    .container { max-width: 900px; margin-top: 30px; }
+    
+    /* O TEMPLATE DO DOCUMENTO */
+    #template-wrapper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1000;
+        opacity: 0;
+        pointer-events: none;
+    }
 
-        .documento-a4 {
-            width: 210mm;
-            padding: 20mm;
-            background: white;
-            font-family: 'Times New Roman', serif;
-            font-size: 12pt;
-            line-height: 1.5;
-            color: #000;
-        }
+    .documento-a4 {
+        width: 210mm;
+        padding: 20mm;
+        background: white;
+        font-family: 'Times New Roman', serif;
+        font-size: 12pt;
+        line-height: 1.5;
+        color: #000;
+    }
 
-        .header-logos {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            height: 100px;
-        }
-        
-        .logo-img {
-            max-height: 90px;
-            max-width: 200px;
-            object-fit: contain;
-        }
+    /* Alteração 2: Centralizar Logos */
+    .header-logos {
+        display: flex;
+        /* Altera para centralizar as logos com um bom espaço entre elas */
+        justify-content: space-around; 
+        align-items: center;
+        /* Alteração 3: Aumentar margem (espaçamento) do cabeçalho para o texto */
+        margin-bottom: 50px; /* Aumentado de 30px para 50px */
+        height: 100px;
+    }
+    
+    .logo-img {
+        max-height: 90px;
+        max-width: 200px;
+        object-fit: contain;
+    }
 
-        /* Ajuste do estilo da assinatura para o novo layout */
-        .assinatura { margin-top: 50px; text-align: right; }
-        p { margin-bottom: 15px; text-align: justify; }
+    .assinatura { margin-top: 50px; text-align: right; }
+    p { margin-bottom: 15px; text-align: justify; }
 
-        .btn-empresa {
-            border: 2px solid transparent;
-            transition: all 0.3s;
-        }
-        .btn-empresa.active {
-            border-color: #007bff;
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-            background-color: #e9f5ff;
-        }
-        .logo-preview { height: 30px; margin-right: 10px; }
-    </style>
+    .btn-empresa {
+        border: 2px solid transparent;
+        transition: all 0.3s;
+    }
+    .btn-empresa.active {
+        border-color: #007bff;
+        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+        background-color: #e9f5ff;
+    }
+    .logo-preview { height: 30px; margin-right: 10px; }
+</style>
 </head>
 <body>
 
