@@ -3,109 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Notificações - Múltiplas Empresas</title>
+    <title>Gerador de Notificações - Pilar Soluções</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 
-<style>
-    body { background-color: #f4f4f9; padding-bottom: 100px; }
-    .container { max-width: 900px; margin-top: 30px; }
+    <style>
+        body { background-color: #f4f4f9; padding-bottom: 100px; }
+        .container { max-width: 900px; margin-top: 30px; }
 
-    /* ESTILOS DA PÁGINA DE CONTROLE (Onde ficam os botões) - OK */
-    .header-visuals {
-        background-color: #5cb85c; 
-        color: white;
-        padding: 20px;
-        border-radius: 10px;
-        margin-bottom: 30px;
-        display: flex;
-        align-items: center;
-        gap: 20px;
-    }
-    .header-visuals img {
-        max-height: 70px; 
-        object-fit: contain;
-        background: white; 
-        padding: 5px;
-        border-radius: 5px;
-    }
-    .header-visuals h2 { margin: 0; font-size: 1.8rem; font-weight: bold; }
-    .header-visuals p { margin: 0; font-size: 0.9rem; text-align: left; }
+        .header-visuals {
+            background-color: #5cb85c; 
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .header-visuals img {
+            max-height: 70px; 
+            object-fit: contain;
+            background: white; 
+            padding: 5px;
+            border-radius: 5px;
+        }
+        .header-visuals h2 { margin: 0; font-size: 1.8rem; font-weight: bold; }
+        .header-visuals p { margin: 0; font-size: 0.9rem; text-align: left; }
 
-    /* O TEMPLATE OCULTO */
-    #template-wrapper {
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: -1000;
-        opacity: 0;
-        pointer-events: none;
-    }
+        /* TABELA MANUAL ESTILOS */
+        .table-manual input { border: none; background: transparent; width: 100%; }
+        .table-manual input:focus { outline: none; background: #f0f7f0; }
+        .btn-remove { color: #dc3545; cursor: pointer; font-weight: bold; }
 
-    /* CORPO A4 */
-    .documento-a4 {
-        width: 210mm;
-        /* CORREÇÃO: Padding removido para evitar margem dupla */
-        padding: 0; 
-        margin: 0; /* GARANTINDO QUE NÃO HÁ MARGEM EXTERNA */
-        margin: 0; 
-        background: white;
-        font-family: 'Times New Roman', serif;
-        font-size: 12pt;
-        line-height: 1.5;
-        color: #000;
-    }
+        #template-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1000;
+            opacity: 0;
+            pointer-events: none;
+        }
 
-    /* NOVO AJUSTE: Limitando a largura do conteúdo interno */
-    /* AJUSTE MAIS AGRESSIVO: Limitando a largura do conteúdo interno */
-    #documento-modelo {
-        /* A4 interno, descontando 10mm de cada lado = 190mm de largura útil */
-        max-width: 190mm; 
-        margin: 0 auto; /* Centraliza o conteúdo dentro da página (embora o html2pdf já faça isso) */
-        /* A4 - (15mm esquerda + 15mm direita) = 180mm de largura útil */
-        max-width: 180mm; 
-        margin: 0 auto; /* Centraliza o conteúdo */
-    }
+        .documento-a4 {
+            width: 210mm;
+            padding: 0; 
+            margin: 0;
+            background: white;
+            font-family: 'Times New Roman', serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+        }
 
-    .header-logos {
-        display: flex;
-        justify-content: space-around; 
-        align-items: center;
-        margin-bottom: 50px; 
-        height: 100px;
-    }
+        #documento-modelo {
+            max-width: 180mm; 
+            margin: 0 auto;
+        }
 
-    .logo-img {
-        max-height: 90px;
-        max-width: 200px;
-        object-fit: contain;
-    }
+        .header-logos {
+            display: flex;
+            justify-content: space-around; 
+            align-items: center;
+            margin-bottom: 50px; 
+            height: 100px;
+        }
 
-    /* Garantindo que o texto não ultrapasse */
-    p { margin-bottom: 15px; text-align: justify; word-wrap: break-word; }
+        .logo-img { max-height: 90px; max-width: 200px; object-fit: contain; }
+        p { margin-bottom: 15px; text-align: justify; word-wrap: break-word; }
+        .assinatura { margin-top: 50px; text-align: right; }
 
-    .assinatura { margin-top: 50px; text-align: right; }
-
-    .btn-empresa { border: 2px solid transparent; transition: all 0.3s; }
-    .btn-empresa.active {
-        border-color: #007bff;
-        box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
-        background-color: #e9f5ff;
-    }
-    .logo-preview { height: 30px; margin-right: 10px; }
-</style>
+        .btn-empresa { border: 2px solid transparent; transition: all 0.3s; }
+        .btn-empresa.active {
+            border-color: #007bff;
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.5);
+            background-color: #e9f5ff;
+        }
+        .logo-preview { height: 30px; margin-right: 10px; }
+    </style>
 </head>
 <body>
 
-<div class="container bg-white p-5 rounded shadow" style="position: relative; z-index: 10;">
+<div class="container bg-white p-5 rounded shadow">
 
     <div class="header-visuals">
         <img src="assets/nadia/logo-dir.png" alt="Logo Principal">
         <div>
             <h2>GERADOR DE NOTIFICAÇÕES</h2>
-            <p>Selecione a empresa notificante para carregar o template e imagens corretas.</p>
+            <p>Selecione a empresa e insira os dados dos clientes.</p>
         </div>
     </div>
 
@@ -113,17 +101,17 @@
     <div class="row mb-4 justify-content-center" id="selecao-empresa">
         <div class="col-md-4 mb-2">
             <button class="btn btn-outline-secondary w-100 btn-lg btn-empresa" data-empresa="nadia" onclick="selecionarEmpresa('nadia')">
-                <img src="assets/nadia/logo-esq.png" class="logo-preview" alt="Logo Nadia" onerror="this.style.display='none'"> Nadia Rural
+                <img src="assets/nadia/logo-esq.png" class="logo-preview"> Nadia Rural
             </button>
         </div>
         <div class="col-md-4 mb-2">
             <button class="btn btn-outline-secondary w-100 btn-lg btn-empresa" data-empresa="inter" onclick="selecionarEmpresa('inter')">
-                <img src="assets/inter/logo-esq.png" class="logo-preview" alt="Logo Inter" onerror="this.style.display='none'"> Inter
+                <img src="assets/inter/logo-esq.png" class="logo-preview"> Inter
             </button>
         </div>
         <div class="col-md-4 mb-2">
             <button class="btn btn-outline-secondary w-100 btn-lg btn-empresa" data-empresa="agrominas" onclick="selecionarEmpresa('agrominas')">
-                <img src="assets/agrominas/logo-esq.png" class="logo-preview" alt="Logo Agrominas" onerror="this.style.display='none'"> Agrominas
+                <img src="assets/agrominas/logo-esq.png" class="logo-preview"> Agrominas
             </button>
         </div>
     </div>
@@ -135,17 +123,39 @@
     <div id="area-dados" style="display:none;">
         <h4 class="mb-3 text-center">2. Insira os Dados</h4>
 
-        <div class="alert alert-info">
-            <strong>Ordem das colunas (Excel/Sheets):</strong><br>
-            NOME | CPF/CNPJ | VALOR
+        <ul class="nav nav-tabs mb-3" id="dadosTab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link active" id="colar-tab" data-bs-toggle="tab" data-bs-target="#colar" type="button">Colar do Excel</button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual" type="button">Preencher na Tela</button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="dadosTabContent">
+            <div class="tab-pane fade show active" id="colar" role="tabpanel">
+                <div class="alert alert-info py-2 small">Ordem: NOME | CPF/CNPJ | VALOR</div>
+                <textarea class="form-control" id="inputData" rows="8" placeholder="GENESIO QUEIROGA	123.456.789-00	R$ 290.000,00"></textarea>
+            </div>
+
+            <div class="tab-pane fade" id="manual" role="tabpanel">
+                <table class="table table-bordered table-manual">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Nome</th>
+                            <th>CPF/CNPJ</th>
+                            <th>Valor</th>
+                            <th style="width: 40px;"></th>
+                        </tr>
+                    </thead>
+                    <tbody id="corpo-tabela-manual">
+                        </tbody>
+                </table>
+                <button class="btn btn-outline-success btn-sm" onclick="adicionarLinhaManual()">+ Adicionar Linha</button>
+            </div>
         </div>
 
-        <div class="mb-3">
-            <label for="inputData" class="form-label">Cole os dados da tabela aqui:</label>
-            <textarea class="form-control" id="inputData" rows="8" placeholder="GENESIO QUEIROGA	123.456.789-00	R$ 290.000,00"></textarea>
-        </div>
-
-        <div class="d-grid gap-2">
+        <div class="d-grid gap-2 mt-4">
             <button class="btn btn-primary btn-lg" onclick="iniciarGeracao()" id="btnGerar">
                 Gerar PDFs e Baixar ZIP
             </button>
@@ -157,29 +167,20 @@
 
 <div id="template-wrapper">
     <div id="documento-modelo" class="documento-a4">
-
         <div class="header-logos">
-            <img src="" id="logo-print-esq" class="logo-img" alt="Logo Esq">
-            <img src="" id="logo-print-dir" class="logo-img" alt="Logo Dir">
+            <img src="" id="logo-print-esq" class="logo-img">
+            <img src="" id="logo-print-dir" class="logo-img">
         </div>
-
-        <div id="template-texto">
-            </div>
-
-        <p style="text-align: right; margin-top: 40px;" id="print-data">
-            Marabá, DATA DE HOJE
-        </p>
-
-        <div class="assinatura" style="text-align: right; margin-top: 50px;">
-            <img src="" id="assinatura-img" style="height: 60px; margin-bottom: 5px; display: block; margin-left: auto;" alt="Assinatura">
-
-            <strong id="assinatura-nome-advogado">NOME DO ADVOGADO</strong><br>
-            <span id="assinatura-oab">OAB/PA XXXX</span>
+        <div id="template-texto"></div>
+        <p style="text-align: right; margin-top: 40px;" id="print-data"></p>
+        <div class="assinatura">
+            <img src="" id="assinatura-img" style="height: 60px; margin-bottom: 5px; display: block; margin-left: auto;">
+            <strong id="assinatura-nome-advogado"></strong><br>
+            <span id="assinatura-oab"></span>
         </div>
     </div>
 </div>
 
 <script src="script.js"></script>
-
 </body>
 </html>
