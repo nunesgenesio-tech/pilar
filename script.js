@@ -1,4 +1,3 @@
-// Dados das Empresas [Mantidos do seu código original]
 const DADOS_ASSINATURA_UNIFICADA = {
     assinatura_img: "assets/nadia/assinatura-n.png",
     assinatura_nome: "GENÉSIO QUEIROGA",
@@ -11,172 +10,116 @@ const DADOS_EMPRESAS = {
         logo_esq: "assets/nadia/logo-esq.png",
         logo_dir: "assets/nadia/logo-dir.png",
         ...DADOS_ASSINATURA_UNIFICADA,
-        texto_base: `<p><strong>NADIA RURAL LTDA</strong>... [Texto omitido para brevidade]</p>`
+        texto_base: `
+            <p><strong>NADIA RURAL LTDA</strong>, inscrita no CNPJ sob nº 01.542.004/0001-64, sediada Avenida Getúlio Vargas, 1892, por seu Diretor Administrativo <strong>ELIAS YUSUF NETO</strong>, vem por meio desta, <strong>NOTIFICAR</strong>:</p>
+            <p><strong>{{Nome}}</strong>, inscrito no CPF/CNPJ sob o nº <strong>{{CNPJ}}</strong> para pagamento de débito em aberto, totalizando o importe de <strong>{{Valor}}</strong>.</p>
+            <p>Se já realizou o pagamento, envie o comprovante para (94) 9 8137-0253. Caso contrário, manifeste-se em até 03 dias úteis para evitar medidas judiciais.</p>`
     },
     inter: {
         nome_curto: "Inter",
         logo_esq: "assets/inter/logo-esq.png",
         logo_dir: "assets/inter/logo-dir.png",
         ...DADOS_ASSINATURA_UNIFICADA,
-        texto_base: `<p><strong>INTER SERVIÇOS FINANCEIROS LTDA</strong>... [Texto omitido]</p>`
+        texto_base: `
+            <p><strong>INTER SERVIÇOS FINANCEIROS LTDA</strong>, por meio de sua Assessoria Jurídica, vem por meio desta, <strong>NOTIFICAR</strong>:</p>
+            <p><strong>{{Nome}}</strong>, portador do CPF/CNPJ <strong>{{CNPJ}}</strong> para regularização de débito no valor de <strong>{{Valor}}</strong>.</p>
+            <p>O não pagamento no prazo de 03 dias úteis resultará na propositura de Ação Judicial de cobrança.</p>`
     },
     agrominas: {
         nome_curto: "Agrominas",
         logo_esq: "assets/agrominas/logo-esq.png",
         logo_dir: "assets/agrominas/logo-dir.png",
         ...DADOS_ASSINATURA_UNIFICADA,
-        texto_base: `<p><strong>AGROMINAS S/A</strong>... [Texto omitido]</p>`
+        texto_base: `
+            <p><strong>AGROMINAS S/A</strong>, por sua representante legal, vem por meio desta, <strong>NOTIFICAR</strong>:</p>
+            <p><strong>{{Nome}}</strong>, CPF/CNPJ <strong>{{CNPJ}}</strong> para quitação de saldo devedor de insumos no valor de <strong>{{Valor}}</strong>.</p>
+            <p>Solicitamos contato imediato para evitar protesto e execução judicial.</p>`
     }
 };
 
 let EMPRESA_SELECIONADA = null;
-let MODO_ENTRADA = 'excel'; // 'excel' ou 'tela'
+let MODO_ENTRADA = 'excel';
 
-// --- FUNÇÕES DE INTERFACE ---
-
-function selecionarEmpresa(empresa) {
-    EMPRESA_SELECIONADA = empresa;
+function selecionarEmpresa(id) {
+    EMPRESA_SELECIONADA = id;
     document.getElementById('area-dados').style.display = 'block';
     document.getElementById('alerta-selecao').style.display = 'none';
-
-    document.querySelectorAll('.btn-empresa').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.dataset.empresa === empresa) btn.classList.add('active');
-    });
-
-    carregarTemplate(DADOS_EMPRESAS[empresa]);
-}
-
-function alternarModo(modo) {
-    MODO_ENTRADA = modo;
-    document.getElementById('modo-excel').style.display = modo === 'excel' ? 'block' : 'none';
-    document.getElementById('modo-tela').style.display = modo === 'tela' ? 'block' : 'none';
+    document.querySelectorAll('.btn-empresa').forEach(b => b.classList.toggle('active', b.dataset.empresa === id));
     
-    document.getElementById('tab-excel').classList.toggle('active', modo === 'excel');
-    document.getElementById('tab-tela').classList.toggle('active', modo === 'tela');
+    const d = DADOS_EMPRESAS[id];
+    document.getElementById('logo-print-esq').src = d.logo_esq;
+    document.getElementById('logo-print-dir').src = d.logo_dir;
+    document.getElementById('template-texto').innerHTML = d.texto_base;
+    document.getElementById('assinatura-nome-advogado').innerText = d.assinatura_nome;
+    document.getElementById('assinatura-oab').innerText = d.assinatura_oab;
+    document.getElementById('assinatura-img').src = d.assinatura_img;
 }
 
-function carregarTemplate(dados) {
-    document.getElementById('logo-print-esq').src = dados.logo_esq;
-    document.getElementById('logo-print-dir').src = dados.logo_dir;
-    document.getElementById('template-texto').innerHTML = dados.texto_base;
-    document.getElementById('assinatura-nome-advogado').innerText = dados.assinatura_nome;
-    document.getElementById('assinatura-oab').innerText = dados.assinatura_oab;
-    const imgAssinatura = document.getElementById('assinatura-img');
-    imgAssinatura.src = dados.assinatura_img || '';
-    imgAssinatura.style.display = dados.assinatura_img ? 'block' : 'none';
+function alternarModo(m) {
+    MODO_ENTRADA = m;
+    document.getElementById('modo-excel').style.display = m === 'excel' ? 'block' : 'none';
+    document.getElementById('modo-tela').style.display = m === 'tela' ? 'block' : 'none';
+    document.getElementById('tab-excel').classList.toggle('active', m === 'excel');
+    document.getElementById('tab-tela').classList.toggle('active', m === 'tela');
 }
-
-// --- FUNÇÕES DA TABELA (MODO TELA) ---
 
 function adicionarLinha() {
-    const tbody = document.getElementById('tabela-corpo');
     const tr = document.createElement('tr');
-    tr.innerHTML = `
-        <td><input type="text" class="input-nome"></td>
-        <td><input type="text" class="input-cnpj"></td>
-        <td><input type="text" class="input-valor"></td>
-        <td><button class="btn-remove" onclick="removerLinha(this)">×</button></td>
-    `;
-    tbody.appendChild(tr);
+    tr.innerHTML = `<td><input type="text" class="input-nome"></td><td><input type="text" class="input-cnpj"></td><td><input type="text" class="input-valor"></td><td><button class="btn-remove" onclick="removerLinha(this)">×</button></td>`;
+    document.getElementById('tabela-corpo').appendChild(tr);
 }
 
-function removerLinha(btn) {
-    const row = btn.parentNode.parentNode;
-    if (document.querySelectorAll('#tabela-corpo tr').length > 1) {
-        row.remove();
-    }
-}
-
-// --- GERAÇÃO DOS PDFs ---
+function removerLinha(btn) { btn.closest('tr').remove(); }
 
 async function iniciarGeracao() {
-    if (!EMPRESA_SELECIONADA) return alert("Selecione uma empresa.");
-
-    const dadosProcessados = coletarDados();
-    if (dadosProcessados.length === 0) return alert("Insira ao menos uma linha de dados.");
+    const dados = coletarDados();
+    if (dados.length === 0) return alert("Insira os dados primeiro.");
 
     const btn = document.getElementById('btnGerar');
     const status = document.getElementById('status');
-    const dadosEmpresa = DADOS_EMPRESAS[EMPRESA_SELECIONADA];
-
-    btn.disabled = true;
-    btn.innerText = "Processando...";
+    btn.disabled = true; btn.innerText = "Processando...";
     configurarData();
 
     try {
         const zip = new JSZip();
-        const pasta = zip.folder(`Notificacoes_${dadosEmpresa.nome_curto}`);
-        const templateTextoOriginal = document.getElementById('template-texto').innerHTML;
-        const elemento = document.getElementById('documento-modelo');
+        const pasta = zip.folder("Notificacoes");
+        const originalHTML = document.getElementById('template-texto').innerHTML;
 
-        const opt = {
-            margin: 15,
-            filename: 'notificacao.pdf',
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-        };
-
-        for (const item of dadosProcessados) {
+        for (const item of dados) {
             status.innerText = `Gerando: ${item.nome}...`;
-            status.className = "mt-3 text-center text-primary fw-bold";
-
-            let htmlPreenchido = templateTextoOriginal
-                .replace('{{Nome}}', item.nome)
-                .replace('{{CNPJ}}', item.cnpj)
-                .replace('{{Valor}}', item.valor);
-
-            document.getElementById('template-texto').innerHTML = htmlPreenchido;
-            const pdfBlob = await html2pdf().set(opt).from(elemento).output('blob');
-            pasta.file(`Notificacao_${item.nome.replace(/[^a-z0-9]/gi, '_')}.pdf`, pdfBlob);
+            let preenchido = originalHTML.replace('{{Nome}}', item.nome).replace('{{CNPJ}}', item.cnpj).replace('{{Valor}}', item.valor);
+            document.getElementById('template-texto').innerHTML = preenchido;
+            
+            const pdfBlob = await html2pdf().set({ margin: 15, filename: 'doc.pdf', html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' } }).from(document.getElementById('documento-modelo')).output('blob');
+            pasta.file(`${item.nome.replace(/\s/g, '_')}.pdf`, pdfBlob);
         }
 
         const content = await zip.generateAsync({type:"blob"});
-        saveAs(content, `Notificacoes_${dadosEmpresa.nome_curto}.zip`);
-        
-        status.innerText = "Download concluído com sucesso!";
-        status.className = "mt-3 text-center text-success fw-bold";
-        btn.innerText = "Gerar Novamente";
-        btn.disabled = false;
-        document.getElementById('template-texto').innerHTML = templateTextoOriginal;
-
-    } catch (erro) {
-        console.error(erro);
-        status.innerText = "Erro ao gerar arquivos.";
-        status.className = "mt-3 text-center text-danger fw-bold";
-        btn.disabled = false;
-    }
+        saveAs(content, `Notificacoes_${DADOS_EMPRESAS[EMPRESA_SELECIONADA].nome_curto}.zip`);
+        status.innerText = "Concluído com sucesso!";
+        btn.disabled = false; btn.innerText = "Gerar Novamente";
+        document.getElementById('template-texto').innerHTML = originalHTML;
+    } catch (e) { alert("Erro: " + e.message); btn.disabled = false; }
 }
 
 function coletarDados() {
-    let lista = [];
+    let list = [];
     if (MODO_ENTRADA === 'excel') {
-        const raw = document.getElementById('inputDataExcel').value.trim();
-        if (!raw) return [];
-        raw.split('\n').forEach((linha, i) => {
-            const cols = linha.split('\t');
-            if (cols.length >= 3 && cols[0].toUpperCase() !== "NOME") {
-                lista.push({ nome: cols[0].trim(), cnpj: cols[1].trim(), valor: cols[2].trim() });
-            }
+        document.getElementById('inputDataExcel').value.trim().split('\n').forEach(l => {
+            const c = l.split('\t');
+            if (c.length >= 3) list.push({ nome: c[0].trim(), cnpj: c[1].trim(), valor: c[2].trim() });
         });
     } else {
         document.querySelectorAll('#tabela-corpo tr').forEach(tr => {
-            const nome = tr.querySelector('.input-nome').value.trim();
-            const cnpj = tr.querySelector('.input-cnpj').value.trim();
-            const valor = tr.querySelector('.input-valor').value.trim();
-            if (nome && cnpj && valor) {
-                lista.push({ nome, cnpj, valor });
-            }
+            const n = tr.querySelector('.input-nome').value;
+            const c = tr.querySelector('.input-cnpj').value;
+            const v = tr.querySelector('.input-valor').value;
+            if (n && c && v) list.push({ nome: n, cnpj: c, valor: v });
         });
     }
-    return lista;
+    return list;
 }
 
 function configurarData() {
-    const hoje = new Date();
-    const dataFormatada = hoje.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
-    document.getElementById('print-data').innerText = `Marabá, ${dataFormatada}`;
+    document.getElementById('print-data').innerText = "Marabá, " + new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
 }
-
-window.onload = configurarData;
